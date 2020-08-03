@@ -22,5 +22,6 @@ git clone https://github.com/GuanLab/Image_based_doublet_detection.git
 ## Dataset
 
 * [images and transcript profiles](https://guanfiles.dcmb.med.umich.edu/image_based_doublet_detection/data/)
+* [trained models](https://guanfiles.dcmb.med.umich.edu/image_based_doublet_detection/models/)
 
 
