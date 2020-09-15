@@ -1,12 +1,6 @@
 """
 Mask R-CNN
-Train on the nuclei segmentation dataset from the
-Kaggle 2018 Data Science Bowl
-https://www.kaggle.com/c/data-science-bowl-2018/
-
-Licensed under the MIT License (see LICENSE for details)
-Written by Waleed Abdulla
-
+adjusted https://github.com/matterport/Mask_RCNN/blob/master/samples/nucleus/nucleus.py
 ------------------------------------------------------------
 
 Usage: import the module (see Jupyter notebooks for examples), or run from
@@ -53,10 +47,6 @@ from mrcnn.config import Config
 from mrcnn import utils
 from mrcnn import model as modellib
 from mrcnn import visualize
-
-#config = tf.ConfigProto()
-#config.gpu_options.per_process_gpu_memory_fraction = 0.45
-#set_session(tf.Session(config=config))
 
 # Path to trained weights file
 COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
