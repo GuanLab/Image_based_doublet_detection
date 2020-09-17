@@ -22,10 +22,10 @@ git clone https://github.com/GuanLab/Image_based_doublet_detection.git
 * [scikit-image](0.17.2)
 * [tensorflow-gpu](1.15.0)
 * [R](https://www.r-project.org/)(3.6.1)
-* [caret]
-* [e1071]
-* [pROC]
-* [stringr]
+* [caret](https://cran.r-project.org/web/packages/caret/index.html)
+* [e1071](https://cran.r-project.org/web/packages/e1071/index.html)
+* [pROC](https://cran.r-project.org/web/packages/pROC/index.html)
+* [stringr](https://cran.r-project.org/web/packages/stringr/index.html)
 * [perl](https://www.perl.org/) (5.10.1)
 * [kallisto](https://pachterlab.github.io/kallisto/)
 
