@@ -1,22 +1,23 @@
 """
 Mask R-CNN
 adjusted https://github.com/matterport/Mask_RCNN/blob/master/samples/nucleus/nucleus.py
+
 ------------------------------------------------------------
 
 Usage: import the module (see Jupyter notebooks for examples), or run from
        the command line as such:
 
     # Train a new model starting from ImageNet weights
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=imagenet
+    python3 train_50_50_50.py train --dataset=/path/to/dataset --subset=train --weights=imagenet
 
     # Train a new model starting from specific weights file
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=/path/to/weights.h5
+    python3 train_50_50_50.py train --dataset=/path/to/dataset --subset=train --weights=/path/to/weights.h5
 
     # Resume training a model that you had trained earlier
-    python3 nucleus.py train --dataset=/path/to/dataset --subset=train --weights=last
+    python3 train_50_50_50.py train --dataset=/path/to/dataset --subset=train --weights=last
 
     # Generate submission file
-    python3 nucleus.py detect --dataset=/path/to/dataset --subset=train --weights=<last or /path/to/weights.h5>
+    python3 train_50_50_50.py detect --dataset=/path/to/dataset --subset=train --weights=<last or /path/to/weights.h5>
 """
 
 # Set matplotlib backend
@@ -39,26 +40,28 @@ import imgaug
 import cv2
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("/local/disk3/mqzhou/single_cell_image/mask_rcnn_cell_machine/sci_2class/")
+#ROOT_DIR = os.path.abspath("/local/disk3/mqzhou/single_cell_image/mask_rcnn_cell_machine/sci_2class/")
+#ROOT_DIR = os.path.abspath("/data/example/")
 
 # Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
+sys.path.append("train/")  # To find local version of the library
 from mrcnn.config import Config
 from mrcnn import utils
 from mrcnn import model as modellib
 from mrcnn import visualize
 
+
 # Path to trained weights file
-COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+#COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 
 # Directory to save logs and model checkpoints, if not provided
 # through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
-
+#DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
+DEFAULT_LOGS_DIR = "../results/logs/"
 # Results directory
 # Save submission files here
-RESULTS_DIR = os.path.join(ROOT_DIR, "results/")
-
+#RESULTS_DIR = os.path.join(ROOT_DIR, "results/")
+RESULTS_DIR = "../results/"
 ############################################################
 #  Configurations
 ############################################################
@@ -76,9 +79,7 @@ class SciConfig(Config):
 
     # Number of training and validation steps per epoch
     STEPS_PER_EPOCH = 100
-    #STEPS_PER_EPOCH = (657 - len(VAL_IMAGE_IDS)) // IMAGES_PER_GPU
-   # VALIDATION_STEPS = max(1, len(VAL_IMAGE_IDS) // IMAGES_PER_GPU)
-
+ 
     # Don't exclude based on confidence. Since we have two classes
     # then 0.5 is the minimum anyway as it picks between nucleus and BG
     DETECTION_MIN_CONFIDENCE = 0
@@ -171,15 +172,6 @@ class SciDataset(utils.Dataset):
         assert subset in ["train", "val", "test"]
         dataset_dir = os.path.join(dataset_dir, subset)
         image_ids = next(os.walk(dataset_dir))[1]
-
-        # if subset == "val":
-        #     image_ids = next(os.walk(dataset_dir))[1]
-        # else:
-        #     # Get image ids from directory names
-        #     image_ids = next(os.walk(dataset_dir))[1]
-        #     if subset == "train":
-        #         image_ids = list(set(image_ids) - set(VAL_IMAGE_IDS))
-        #         #image_ids=set(image_ids) - set(VAL_IMAGE_IDS)
         
         # Add images
         for image_id in image_ids:
@@ -206,11 +198,7 @@ class SciDataset(utils.Dataset):
         for f in mask_ids:
             if f.endswith(".png"):
                 m=skimage.io.imread(os.path.join(mask_dir, f))
-               # m = skimage.color.rgb2gray(skimage.io.imread(os.path.join(mask_dir, f)))
-               # m=m.reshape(m.shape[0],m.shape[1],1)
-                #print('load_mask:',m.shape)
                 m=m.astype(np.bool)
-               # .astype(np.bool)
                 mask.append(m)
                 if f.startswith("cell"):
                     class_ids.append(1)
@@ -354,10 +342,11 @@ def detect(model, dataset_dir, subset, submit_name):
     #submit_dir = "submit_{:%Y%m%dT%H%M%S}".format(datetime.datetime.now())
     #submit_dir = os.path.join(RESULTS_DIR, submit_dir)
     submit_dir = os.path.join(RESULTS_DIR, submit_name)
-    os.makedirs(submit_dir)
+    if not os.path.exists(submit_dir):
+        os.makedirs(submit_dir)
     
-    mask_dir=os.path.join(submit_dir,"masks")
-    os.makedirs(mask_dir)
+#     mask_dir=os.path.join(submit_dir,"masks")
+#     os.makedirs(mask_dir)
     #os.system('mkdir '+submit_dir+'/masks')#path to store masks
     # Read dataset
     dataset = SciDataset()
@@ -401,23 +390,23 @@ def detect(model, dataset_dir, subset, submit_name):
         num_cells.append("{}, {}".format(source_id,len(index)))
             
        # save masks
-        mask_path=os.path.join(mask_dir,dataset.image_info[image_id]["id"])
-        os.makedirs(mask_path)
-        for i in index:
-            m=r['masks'][:,:,i]*255
-            cv2.imwrite(mask_path+'/'+str(i)+'.png',m)
+#         mask_path=os.path.join(mask_dir,dataset.image_info[image_id]["id"])
+#         os.makedirs(mask_path)
+#         for i in index:
+#             m=r['masks'][:,:,i]*255
+#             cv2.imwrite(mask_path+'/'+str(i)+'.png',m)
        
        # Save image with masks 
-       # visualize.display_instances(
-       #     image, r['rois'][index_display,:], r['masks'][:,:,index_display], r['class_ids'][index_display],
-       #     dataset.class_names, r['scores'][index_display],
-       #     show_mask=False,
-       #     title="Predictions")
         visualize.display_instances(
-            image, r['rois'], r['masks'], r['class_ids'],
-            dataset.class_names, r['scores'],
+            image, r['rois'][index_display,:], r['masks'][:,:,index_display], r['class_ids'][index_display],
+            dataset.class_names, r['scores'][index_display],
             show_mask=False,
             title="Predictions")
+#         visualize.display_instances(
+#             image, r['rois'], r['masks'], r['class_ids'],
+#             dataset.class_names, r['scores'],
+#             show_mask=False,
+#             title="Predictions")
         plt.savefig("{}/{}.png".format(submit_dir, dataset.image_info[image_id]["id"]))
 
     # Save to csv file
@@ -497,11 +486,6 @@ if __name__ == '__main__':
     #debug
     num_levels = len(backbone_shapes)
     anchors_per_cell = len(config.RPN_ANCHOR_RATIOS)
-    #print("Count: ", anchors.shape[0])
-    #print("Scales: ", config.RPN_ANCHOR_SCALES)
-    #print("ratios: ", config.RPN_ANCHOR_RATIOS)
-    #print("Anchors per Cell: ", anchors_per_cell)
-    #print("Levels: ", num_levels)
 
     # Create model
     if args.command == "train":
