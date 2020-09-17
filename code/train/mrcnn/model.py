@@ -2420,8 +2420,8 @@ class MaskRCNN():
                 0, image.shape, molded_image.shape, window, scale,
                 np.zeros([self.config.NUM_CLASSES], dtype=np.int32))
             # Append
-            print('input_size: ')
-            print(molded_image.shape())
+            #print('input_size: ')
+            #print(molded_image.shape())
             molded_images.append(molded_image)
             windows.append(window)
             image_metas.append(image_meta)
